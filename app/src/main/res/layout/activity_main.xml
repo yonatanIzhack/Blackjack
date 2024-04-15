@@ -1,0 +1,226 @@
+<!-- activity_main.xml -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="15dp"
+    android:background="@drawable/bg"
+    android:layout_alignParentLeft="true"
+    >
+
+    <TextView
+        android:id="@+id/dealerHandTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dealer's Hand: "
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:layout_marginTop="100dp"
+        android:layout_alignParentLeft="true"/>
+
+    <TextView
+        android:id="@+id/playerHandTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Your Hand: "
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="100dp"
+        android:layout_alignParentLeft="true"/>
+
+    <Button
+        android:id="@+id/hitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="390dp"
+        android:layout_alignParentLeft="true"
+        android:text="Hit"
+        android:textAllCaps="false"
+        android:background="@drawable/custom_button"
+        android:textSize="18sp"/>
+
+
+    <Button
+        android:id="@+id/doubleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="330dp"
+        android:text="Double"
+        android:textSize="18sp"
+        android:textAllCaps="false"
+        android:background="@drawable/custom_button"/>
+
+    <Button
+        android:id="@+id/splitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="330dp"
+        android:text="Split"
+        android:textSize="18sp"
+        android:textAllCaps="false"
+        android:background="@drawable/custom_button"/>
+
+    <Button
+        android:id="@+id/standButton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="390dp"
+        android:layout_alignParentRight="true"
+        android:text="Stand"
+        android:textSize="18sp"
+        android:textAllCaps="false"
+        android:background="@drawable/custom_button"/>
+
+    <Button
+        android:id="@+id/newGameButton"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:text="New Game"
+        android:layout_alignParentLeft="true"
+        android:textSize="18sp"
+        android:layout_marginTop="15dp"
+        android:textAllCaps="false"
+        android:background="@drawable/custom_button"/>
+
+    <ImageView
+        android:id="@+id/playerImg1"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        />
+
+    <ImageView
+        android:id="@+id/playerImg2"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="155dp"
+        />
+
+    <ImageView
+        android:id="@+id/playerImg3"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="40dp"
+        android:layout_marginLeft="170dp"
+        />
+
+    <ImageView
+        android:id="@+id/playerImg4"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="60dp"
+        android:layout_marginLeft="185dp"
+        />
+
+    <ImageView
+        android:id="@+id/playerImg5"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="80dp"
+        android:layout_marginLeft="200dp"
+        />
+
+    <ImageView
+        android:id="@+id/playerImg6"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="100dp"
+        android:layout_marginLeft="215dp"
+        />
+
+    <ImageView
+        android:id="@+id/playerImg7"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="120dp"
+        android:layout_marginLeft="230dp"
+        />
+
+    <ImageView
+        android:id="@+id/dealerImg1"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        />
+
+    <ImageView
+        android:id="@+id/dealerImg2"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="155dp"
+        android:layout_marginTop="20dp"
+        />
+
+    <ImageView
+        android:id="@+id/dealerImg3"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="170dp"
+        android:layout_marginTop="40dp"
+        />
+
+    <ImageView
+        android:id="@+id/dealerImg4"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="185dp"
+        android:layout_marginTop="60dp"
+        />
+
+    <ImageView
+        android:id="@+id/dealerImg5"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="200dp"
+        android:layout_marginTop="80dp"
+        />
+
+    <ImageView
+        android:id="@+id/dealerImg6"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="215dp"
+        android:layout_marginTop="100dp"
+        />
+
+    <ImageView
+        android:id="@+id/dealerImg7"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="230dp"
+        android:layout_marginTop="120dp"
+        />
+
+    <TextView
+        android:id="@+id/resultTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Result"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="450dp" />
+
+
+</RelativeLayout>
