@@ -2,8 +2,10 @@ package com.example.blackjack;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,8 +83,6 @@ public class MainActivity extends AppCompatActivity {
         dealerImages.add(dealerImg7);
 
         splitButton.setVisibility(View.GONE);
-
-
 
         hitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -206,8 +206,15 @@ public class MainActivity extends AppCompatActivity {
             showDialog("in that case, you should " + optimalPlay, "played wrong");
         }
 
-        game.split();
-        splitUpdateUI();
+        Intent intent = new Intent(MainActivity.this, SplitActivity.class);
+
+        Card firstCard = game.getPlayerHand().get(0);
+        Card secondCard = game.getPlayerHand().get(1);
+
+        intent.putExtra("Game", game);
+
+
+        startActivity(intent);
     }
 
     private void dealerTurn() {

@@ -5,27 +5,41 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BlackjackGame {
+public class BlackjackGame implements Serializable {
     private Deck deck;
     private List<Card> playerHand;
     private List<Card> dealerHand;
+    private List<Card> firstHand;
+    private List<Card> secondHand;
 
     public BlackjackGame() {
         deck = new Deck();
         deck.shuffle();
+
         playerHand = new ArrayList<>();
         dealerHand = new ArrayList<>();
+
+        // for the split
+        firstHand = new ArrayList<>();
+        secondHand = new ArrayList<>();
 
     }
 
     public void dealInitialCards() {
-        playerHand.add(deck.drawCard());
+        Card firstCard = deck.drawCard();
+        Card secondCard = deck.drawCard();
+
+        playerHand.add(firstCard);
         dealerHand.add(deck.drawCard());
-        playerHand.add(deck.drawCard());
+        playerHand.add(firstCard);
         dealerHand.add(deck.drawCard());
+
+        firstHand.add(firstCard);
+        secondHand.add(secondCard);
     }
 
     public int getPlayerScore() {
@@ -35,6 +49,10 @@ public class BlackjackGame {
     public int getDealerScore() {
         return calculateScore(dealerHand);
     }
+
+    public int getFirstHandScore(){return calculateScore(firstHand); }
+
+    public int getSecondHandScore(){return calculateScore(secondHand); }
 
     private int calculateScore(List<Card> hand) {
         int score = 0;
@@ -57,8 +75,6 @@ public class BlackjackGame {
             }
         }
 
-
-
         return score;
     }
 
@@ -66,16 +82,28 @@ public class BlackjackGame {
         playerHand.add(deck.drawCard());
     }
 
-    public void playerDouble() {
-        playerHand.add(deck.drawCard());
-    }
+    public void firstHandHit() { firstHand.add(deck.drawCard()); }
 
-    public void dealerHit() {
-        dealerHand.add(deck.drawCard());
-    }
+    public void secondHandHit() { secondHand.add(deck.drawCard()); }
+
+    public void dealerHit() { dealerHand.add(deck.drawCard()); }
+
+    public void playerDouble() { playerHand.add(deck.drawCard()); }
+
+    public void firstHandDouble() { firstHand.add(deck.drawCard()); }
+
+    public void secondHandDouble() { secondHand.add(deck.drawCard()); }
 
     public List<Card> getPlayerHand() {
         return playerHand;
+    }
+
+    public List<Card> getFirstHand() {
+        return firstHand;
+    }
+
+    public List<Card> getSecondHand() {
+        return secondHand;
     }
 
     public List<Card> getDealerHand() {
@@ -84,6 +112,14 @@ public class BlackjackGame {
 
     public boolean isPlayerBust() {
         return getPlayerScore() > 21;
+    }
+
+    public boolean isFirstHandBust() {
+        return getFirstHandScore() > 21;
+    }
+
+    public boolean isSecondHandBust() {
+        return getSecondHandScore() > 21;
     }
 
     public boolean isDealerBust() {
