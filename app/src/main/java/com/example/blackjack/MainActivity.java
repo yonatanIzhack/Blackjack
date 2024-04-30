@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     private BlackjackGame game;
@@ -254,10 +256,8 @@ public class MainActivity extends AppCompatActivity {
     private void initialUpdateUI() {
         dealerImg1.setImageResource(getCardImageView(game.getDealerHand().get(0)));
 
-        for(int i = 0; i < game.getPlayerHand().size(); i++){
-            playerImages.get(i).setImageResource(getCardImageView(game.getPlayerHand().get(i)));
 
-        }
+        updatePlayerHand();
 
         if(game.getPlayerHand().size() == 2 && game.getPlayerHand().get(0).getRank() == game.getPlayerHand().get(1).getRank()){
             splitButton.setVisibility(View.VISIBLE);
@@ -313,6 +313,39 @@ public class MainActivity extends AppCompatActivity {
 
         playerHandTextView.setText("Your Hand: " + String.valueOf(game.getPlayerScore()));
         dealerHandTextView.setText("Dealer's Hand: " + String.valueOf(game.getDealerHand().get(0).getRank()));
+    }
+
+    private void updatePlayerHand() {
+
+
+        Handler handler = new Handler();
+
+        Runnable updateImageRunnable = new Runnable() {
+            @Override
+            public void run() {
+                playerImages.get(0).setImageResource(getCardImageView(game.getPlayerHand().get(0)));
+
+                handler.postDelayed(this, 1000);
+
+                playerImages.get(1).setImageResource(getCardImageView(game.getPlayerHand().get(1)));
+
+            }
+        };
+
+//        for(int i = 0; i < game.getPlayerHand().size(); i++){
+//            try {
+//                // Sleep for 1000 milliseconds (1 second)
+//                Thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//                // Handle interrupted exception (if needed)
+//                e.printStackTrace();
+//            }
+//
+//            Log.d("sleepCheck", game.getPlayerHand().get(i).toString());
+//
+//            playerImages.get(i).setImageResource(getCardImageView(game.getPlayerHand().get(i)));
+//
+//        }
     }
 
     @SuppressLint("SetTextI18n")
