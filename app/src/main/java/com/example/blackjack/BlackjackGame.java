@@ -15,6 +15,8 @@ public class BlackjackGame implements Serializable {
     private List<Card> dealerHand;
     private List<Card> firstHand;
     private List<Card> secondHand;
+    boolean HitFirstHand = true;
+    boolean isSplit = false;
 
     public BlackjackGame() {
         deck = new Deck();
@@ -39,7 +41,7 @@ public class BlackjackGame implements Serializable {
         dealerHand.add(deck.drawCard());
 
         firstHand.add(firstCard);
-        secondHand.add(secondCard);
+        secondHand.add(firstCard);
     }
 
     public int getPlayerScore() {
@@ -82,9 +84,25 @@ public class BlackjackGame implements Serializable {
         playerHand.add(deck.drawCard());
     }
 
-    public void firstHandHit() { firstHand.add(deck.drawCard()); }
+    public void firstHandHit() {
+        Card card = deck.drawCard();
 
-    public void secondHandHit() { secondHand.add(deck.drawCard()); }
+        while(card.getValue() == firstHand.get(0).getValue()){
+            card = deck.drawCard();
+        }
+
+        firstHand.add(card);
+    }
+
+    public void secondHandHit() {
+        Card card = deck.drawCard();
+
+        while(card.getValue() == secondHand.get(0).getValue()){
+            card = deck.drawCard();
+        }
+
+        secondHand.add(card);
+    }
 
     public void dealerHit() { dealerHand.add(deck.drawCard()); }
 
@@ -167,7 +185,16 @@ public class BlackjackGame implements Serializable {
         int dealerValue = dealerFirstCard.getValue();
 
         int firstCard = playerHand.get(0).getValue();
-        int secondCard = playerHand.get(1).getValue();
+        int secondCard;
+
+        if(playerHand.size() > 1){
+            secondCard = playerHand.get(1).getValue();
+        } else{
+            secondCard = -1;
+        }
+
+        Log.d("allCards", String.valueOf(firstCard));
+        Log.d("allCards", String.valueOf(secondCard));
 
         // Split hands
 
