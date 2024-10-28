@@ -13,23 +13,32 @@
         android:id="@+id/dealerHandTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dealer's Hand: "
+        android:text=""
         android:textSize="20sp"
         android:textColor="#FFFFFF"
-        android:layout_marginTop="100dp"
-        android:layout_alignParentLeft="true"/>
+        android:layout_centerHorizontal="true"/>
 
     <TextView
         android:id="@+id/firstHandTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Your Hand: "
+        android:text="()"
         android:textSize="20sp"
         android:textColor="#FFFFFF"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="240dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="22dp"
         android:layout_alignParentLeft="true"/>
+
+    <TextView
+        android:id="@+id/secondHandTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="()"
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="22dp"
+        android:layout_alignParentRight="true"/>
 
     <Button
         android:id="@+id/hitButton"
@@ -81,6 +90,8 @@
         android:layout_width="75dp"
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:layout_alignParentLeft="true"
         />
 
     <ImageView
@@ -89,7 +100,7 @@
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="50dp"
         android:layout_marginLeft="15dp"
         />
 
@@ -99,7 +110,7 @@
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="70dp"
         android:layout_marginLeft="30dp"
         />
 
@@ -109,7 +120,7 @@
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="90dp"
         android:layout_marginLeft="45dp"
         />
 
@@ -119,7 +130,7 @@
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="110dp"
         android:layout_marginLeft="60dp"
         />
 
@@ -129,7 +140,7 @@
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="130dp"
         android:layout_marginLeft="75dp"
         />
 
@@ -139,7 +150,7 @@
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginBottom="120dp"
+        android:layout_marginBottom="150dp"
         android:layout_marginLeft="90dp"
         />
 
@@ -149,6 +160,7 @@
         android:layout_height="100dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
         />
 
     <ImageView
@@ -157,7 +169,7 @@
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="50dp"
         android:layout_marginRight="15dp"
         />
 
@@ -167,7 +179,7 @@
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="70dp"
         android:layout_marginRight="30dp"
         />
 
@@ -177,7 +189,7 @@
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="90dp"
         android:layout_marginRight="45dp"
         />
 
@@ -187,7 +199,7 @@
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="110dp"
         android:layout_marginRight="60dp"
         />
 
@@ -197,7 +209,7 @@
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="130dp"
         android:layout_marginRight="75dp"
         />
 
@@ -207,7 +219,7 @@
         android:layout_height="100dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="120dp"
+        android:layout_marginBottom="150dp"
         android:layout_marginRight="90dp"
         />
 
@@ -216,6 +228,7 @@
         android:layout_width="75dp"
         android:layout_height="100dp"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
         />
 
     <ImageView
@@ -224,7 +237,7 @@
         android:layout_height="100dp"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="155dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="50dp"
         />
 
     <ImageView
@@ -233,7 +246,7 @@
         android:layout_height="100dp"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="170dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="70dp"
         />
 
     <ImageView
@@ -242,7 +255,7 @@
         android:layout_height="100dp"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="185dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="90dp"
         />
 
     <ImageView
@@ -251,7 +264,7 @@
         android:layout_height="100dp"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="200dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="110dp"
         />
 
     <ImageView
@@ -260,7 +273,7 @@
         android:layout_height="100dp"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="215dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="130dp"
         />
 
     <ImageView
@@ -269,17 +282,47 @@
         android:layout_height="100dp"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="230dp"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="150dp"
+        />
+
+    <ImageView
+        android:id="@+id/pointLeft"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:src="@drawable/point_left"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="115dp"
+        android:layout_alignParentBottom="true"
+        />
+
+    <ImageView
+        android:id="@+id/pointRight"
+        android:layout_width="75dp"
+        android:layout_height="100dp"
+        android:src="@drawable/point_right"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="115dp"
+        android:layout_alignParentBottom="true"
         />
 
     <TextView
-        android:id="@+id/resultTextView"
+        android:id="@+id/firstHandResultTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Result"
+        android:text=""
         android:textSize="20sp"
         android:textColor="#FFFFFF"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="450dp" />
+
+    <TextView
+        android:id="@+id/secondHandResultTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="20sp"
+        android:textColor="#FFFFFF"
+        android:layout_alignParentRight="true"
         android:layout_marginTop="450dp" />
 
 </RelativeLayout>
