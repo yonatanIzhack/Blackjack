@@ -37,11 +37,11 @@ public class BlackjackGame implements Serializable {
 
         playerHand.add(firstCard);
         dealerHand.add(deck.drawCard());
-        playerHand.add(firstCard);
+        playerHand.add(secondCard);
         dealerHand.add(deck.drawCard());
 
         firstHand.add(firstCard);
-        secondHand.add(firstCard);
+        secondHand.add(secondCard);
     }
 
     public int getPlayerScore() {

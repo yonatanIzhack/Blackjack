@@ -1,8 +1,11 @@
 package com.example.blackjack;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,11 +18,12 @@ public class SplitActivity extends AppCompatActivity {
 
     private BlackjackGame game;
     private Button hitButton, standButton, doubleButton, newGameButton;
-    private TextView resultTextView, dealerHandTextView, playerHandTextView;
+    private TextView firstHandResultTextView, secondHandResultTextView, dealerHandTextView, firstHandTextView, secondHandTextView;
     private ImageView firstHandImg1, firstHandImg2, firstHandImg3, firstHandImg4, firstHandImg5, firstHandImg6, firstHandImg7;
     private ImageView secondHandImg1, secondHandImg2, secondHandImg3, secondHandImg4, secondHandImg5, secondHandImg6, secondHandImg7;
     private ImageView dealerImg1, dealerImg2, dealerImg3, dealerImg4, dealerImg5, dealerImg6, dealerImg7;
 
+    private ImageView pointLeft, pointRight;
     private List<ImageView> firstHandImages;
     private List<ImageView> secondHandImages;
     private List<ImageView> dealerImages;
@@ -30,9 +34,12 @@ public class SplitActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_split);
 
-        resultTextView = findViewById(R.id.resultTextView);
+        firstHandResultTextView = findViewById(R.id.firstHandResultTextView);
+        secondHandResultTextView = findViewById(R.id.secondHandResultTextView);
+
         dealerHandTextView = findViewById(R.id.dealerHandTextView);
-        playerHandTextView = findViewById(R.id.firstHandTextView);
+        firstHandTextView = findViewById(R.id.firstHandTextView);
+        secondHandTextView = findViewById(R.id.secondHandTextView);
 
         hitButton = findViewById(R.id.hitButton);
         standButton = findViewById(R.id.standButton);
@@ -96,12 +103,51 @@ public class SplitActivity extends AppCompatActivity {
         dealerImages.add(dealerImg6);
         dealerImages.add(dealerImg7);
 
+        pointLeft = findViewById(R.id.pointLeft);
+        pointRight = findViewById(R.id.pointRight);
+
+        hitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playerHit();
+            }
+        });
+
+        standButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playerStand();
+            }
+        });
+
+        doubleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playerDouble();
+            }
+        });
+
+        newGameButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openMainActivity();
+            }
+        });
+
         startNewGame();
 
     }
 
+    private void openMainActivity() {
+        Intent intent = new Intent(SplitActivity.this, MainActivity.class);
+
+        startActivity(intent);
+    }
+
     private void startNewGame() {
         doubleButton.setVisibility(View.VISIBLE);
+        newGameButton.setVisibility(View.GONE);
+
 
         hitButton.setEnabled(true);
         standButton.setEnabled(true);
@@ -110,11 +156,170 @@ public class SplitActivity extends AppCompatActivity {
 
 
         game = (BlackjackGame) getIntent().getSerializableExtra("Game");
+        game.firstHandHit();
+        game.secondHandHit();
         initialUpdateUI();
+    }
+
+    private void playerHit(){
+        String optimalPlay;
+
+        doubleButton.setVisibility(View.GONE);
+
+        if(game.HitFirstHand){
+            optimalPlay = game.determineAction(game.getFirstHand(), game.getDealerHand().get(0));
+
+            game.firstHandHit();
+        }else {
+            optimalPlay = game.determineAction(game.getSecondHand(), game.getDealerHand().get(0));
+
+            game.secondHandHit();
+        }
+
+        if(!optimalPlay.equals("Hit")){
+            showDialog("in that case, you should " + optimalPlay, "played wrong");
+        }
+
+        initialUpdateUI();
+
+        if(game.isFirstHandBust()){
+            firstHandResultTextView.setText("Busted!");;
+            if(game.HitFirstHand){
+                playerStand();
+            }
+        }
+
+        if(game.isSecondHandBust()){
+            secondHandResultTextView.setText("Busted!");
+            playerStand();
+        }
+    }
+
+    public void playerStand(){
+        String optimalPlay = game.determineAction(game.getPlayerHand(), game.getDealerHand().get(0));
+
+        if(game.HitFirstHand){
+            game.HitFirstHand = false;
+            doubleButton.setVisibility(View.VISIBLE);
+            optimalPlay = game.determineAction(game.getFirstHand(), game.getDealerHand().get(0));
+
+        }else {
+            optimalPlay = game.determineAction(game.getSecondHand(), game.getDealerHand().get(0));
+
+            if(game.isFirstHandBust() && game.isSecondHandBust()){
+                endGame();
+            }
+            else {
+                dealerTurn();
+            }
+        }
+
+        if(!optimalPlay.equals("Stand")){
+            showDialog("in that case, you should " + optimalPlay, "played wrong");
+        }
+
+        initialUpdateUI();
+    }
+
+
+    public void playerDouble(){
+        String optimalPlay;
+
+
+        if(game.HitFirstHand){
+            optimalPlay = game.determineAction(game.getFirstHand(), game.getDealerHand().get(0));
+            game.firstHandDouble();
+        }else {
+            optimalPlay = game.determineAction(game.getSecondHand(), game.getDealerHand().get(0));
+            game.secondHandDouble();
+        }
+
+        if(!optimalPlay.equals("Double")){
+            showDialog("in that case, you should " + optimalPlay, "played wrong");
+        }
+
+        initialUpdateUI();
+
+        playerStand();
+    }
+
+    private void dealerTurn() {
+        while (!game.isGameOver() && game.getDealerScore() < 17) {
+            game.dealerHit();
+        }
+
+
+        if(game.isFirstHandBust()){
+            firstHandResultTextView.setText("Lose");
+        } else if (game.isDealerBust()){
+            firstHandResultTextView.setText("Win");
+        } else if(game.getFirstHandScore() > game.getDealerScore()){
+            firstHandResultTextView.setText("Win");
+        } else if (game.getFirstHandScore() < game.getDealerScore()) {
+            firstHandResultTextView.setText("Lose");
+        } else {
+            firstHandResultTextView.setText("Push");
+        }
+
+        if(game.isSecondHandBust()){
+            secondHandResultTextView.setText("Lose");
+        } else if (game.isDealerBust()){
+            secondHandResultTextView.setText("Win");
+        } else if(game.getSecondHandScore() > game.getDealerScore()){
+            secondHandResultTextView.setText("Win");
+        } else if (game.getSecondHandScore() < game.getDealerScore()) {
+            secondHandResultTextView.setText("Lose");
+        } else {
+            secondHandResultTextView.setText("Push");
+        }
+
+        if(!(game.isFirstHandBust() && game.isSecondHandBust())){
+            UpdateUI();
+        }
+
+        endGame();
+    }
+
+    private void endGame() {
+        hitButton.setEnabled(false);
+        standButton.setEnabled(false);
+        doubleButton.setEnabled(false);
+
+        pointRight.setVisibility(View.GONE);
+        newGameButton.setEnabled(true);
+        newGameButton.setVisibility(View.VISIBLE);
+
+
+        pointLeft.setVisibility(View.GONE);
+
+        dealerHandTextView.setText("(" + String.valueOf(game.getDealerScore()) + ")");
+    }
+
+    private String getResultMessage() {
+        if(game.isDealerBust()){
+            return "Dealer bust! you win";
+        } else if(game.isFirstHandBust()){
+
+        } else if (game.gameResult().equals("Lose")) {
+            return "You lose.";
+        } else if (game.gameResult().equals("Win")) {
+            return "You win!";
+        }
+        return "Push";
     }
 
     private void initialUpdateUI() {
 
+        hitButton.setEnabled(true);
+        doubleButton.setEnabled(true);
+
+        if(game.HitFirstHand){
+            pointLeft.setVisibility(View.VISIBLE);
+            pointRight.setVisibility(View.GONE);
+        } else {
+            pointLeft.setVisibility(View.GONE);
+            pointRight.setVisibility(View.VISIBLE);
+        }
         dealerImg1.setImageResource(getCardImageView(game.getDealerHand().get(0)));
 
         for(int i = 0; i < game.getFirstHand().size(); i++){
@@ -125,19 +330,40 @@ public class SplitActivity extends AppCompatActivity {
             secondHandImages.get(i).setImageResource(getCardImageView(game.getSecondHand().get(i)));
         }
 
-        playerHandTextView.setText("Your Hand: " + String.valueOf(game.getPlayerScore()));
-        dealerHandTextView.setText("Dealer's Hand: " + String.valueOf(game.getDealerHand().get(0).getRank()));
+        firstHandTextView.setText("(" + String.valueOf(game.getFirstHandScore()) + ")");
+        secondHandTextView.setText("(" + String.valueOf(game.getSecondHandScore()) + ")");
+
+        if(game.getFirstHandScore() == 21 && game.HitFirstHand){
+            hitButton.setEnabled(false);
+            doubleButton.setEnabled(false);
+        }
+
+        if(game.getSecondHandScore() == 21 && !game.HitFirstHand){
+            hitButton.setEnabled(false);
+            doubleButton.setEnabled(false);
+        }
     }
 
-    private void endGame(String message) {
-        resultTextView.setText(message);
+    public void UpdateUI(){
+        for(int i = 0; i < game.getDealerHand().size(); i++){
+            dealerImages.get(i).setImageResource(getCardImageView(game.getDealerHand().get(i)));
+        }
 
-        hitButton.setEnabled(false);
-        standButton.setEnabled(false);
-        doubleButton.setEnabled(false);
+        dealerHandTextView.setText("(" + String.valueOf(game.getDealerScore()) + ")");
 
-        newGameButton.setEnabled(true);
     }
+
+    private void showDialog(String message, String title) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("OK", (dialog, id) -> {
+                    // Do something here
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
 
     public int getCardImageView(Card card){
         String StringCard = card.toString();

@@ -1,5 +1,6 @@
 package com.example.blackjack;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -10,8 +11,10 @@ import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView playerImg1, playerImg2, playerImg3, playerImg4, playerImg5, playerImg6, playerImg7;
     private ImageView dealerImg1, dealerImg2, dealerImg3, dealerImg4, dealerImg5, dealerImg6, dealerImg7;
+    private ImageView faceDownCard;
 
     private List<ImageView> playerImages;
     private List<ImageView> dealerImages;
@@ -84,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
         dealerImages.add(dealerImg6);
         dealerImages.add(dealerImg7);
 
+        faceDownCard = findViewById(R.id.faceDownCard);
+
         splitButton.setVisibility(View.GONE);
 
         hitButton.setOnClickListener(new View.OnClickListener() {
@@ -126,9 +132,10 @@ public class MainActivity extends AppCompatActivity {
         startNewGame();
     }
 
-    private void startNewGame() {
+    public void startNewGame() {
         doubleButton.setVisibility(View.VISIBLE);
         splitButton.setVisibility(View.GONE);
+        newGameButton.setVisibility(View.GONE);
 
 
         for(int i = 0; i < playerImages.size(); i++){
@@ -154,9 +161,20 @@ public class MainActivity extends AppCompatActivity {
 
     private void playerHit() {
         doubleButton.setVisibility(View.GONE);
+        splitButton.setVisibility(View.GONE);
 
         String optimalPlay = game.determineAction(game.getPlayerHand(), game.getDealerHand().get(0));
 
+//        ObjectAnimator animatorX = ObjectAnimator.ofFloat(dealerImg1, "translationX", 200);
+//        ObjectAnimator animatorY = ObjectAnimator.ofFloat(dealerImg1, "translationY", 200);
+//
+//        // Set duration for the animation (in milliseconds)
+//        animatorX.setDuration(1000); // 1000 milliseconds = 1 second
+//        animatorY.setDuration(1000); // 1000 milliseconds = 1 second
+//
+//        // Start the animation
+//        animatorX.start();
+//        animatorY.start();
 
         if(!optimalPlay.equals("Hit")){
             showDialog("in that case, you should " + optimalPlay, "played wrong");
@@ -173,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void playerDouble() {
         String optimalPlay = game.determineAction(game.getPlayerHand(), game.getDealerHand().get(0));
-
+        splitButton.setVisibility(View.GONE);
 
         if(!optimalPlay.equals("Double")){
             showDialog("in that case, you should " + optimalPlay, "played wrong");
@@ -190,7 +208,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void playerStand() {
         String optimalPlay = game.determineAction(game.getPlayerHand(), game.getDealerHand().get(0));
-
+        splitButton.setVisibility(View.GONE);
+        doubleButton.setVisibility(View.GONE);
 
         if(!optimalPlay.equals("Stand")){
             showDialog("in that case, you should " + optimalPlay, "played wrong");
@@ -203,20 +222,16 @@ public class MainActivity extends AppCompatActivity {
     private void playerSplit() {
         String optimalPlay = game.determineAction(game.getPlayerHand(), game.getDealerHand().get(0));
 
+        game.isSplit = true;
 
         if(!optimalPlay.equals("Split")){
-            showDialog("in that case, you should " + optimalPlay, "played wrong");
+            showDialog2("in that case, you should " + optimalPlay, "played wrong");
+        } else {
+            Intent intent = new Intent(MainActivity.this, SplitActivity.class);
+            intent.putExtra("Game", game);
+
+            startActivity(intent);
         }
-
-        Intent intent = new Intent(MainActivity.this, SplitActivity.class);
-
-        Card firstCard = game.getPlayerHand().get(0);
-        Card secondCard = game.getPlayerHand().get(1);
-
-        intent.putExtra("Game", game);
-
-
-        startActivity(intent);
     }
 
     private void dealerTurn() {
@@ -236,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
         doubleButton.setEnabled(false);
         splitButton.setEnabled(false);
 
+        newGameButton.setVisibility(View.VISIBLE);
         newGameButton.setEnabled(true);
     }
 
@@ -254,10 +270,21 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     private void initialUpdateUI() {
+
         dealerImg1.setImageResource(getCardImageView(game.getDealerHand().get(0)));
 
+        float x = dealerImg1.getX();
+        float y = dealerImg1.getY();
 
-        updatePlayerHand();
+        Log.d("debugLocation", "X: " + x + " y: " + y);
+
+        // Move the second ImageView to the location of the first ImageView with animation
+        //AnimationUtils.moveImageViewToLocation(faceDownCard, x, y);
+
+
+        for(int i = 0; i < game.getPlayerHand().size(); i++){
+            playerImages.get(i).setImageResource(getCardImageView(game.getPlayerHand().get(i)));
+        }
 
         if(game.getPlayerHand().size() == 2 && game.getPlayerHand().get(0).getRank() == game.getPlayerHand().get(1).getRank()){
             splitButton.setVisibility(View.VISIBLE);
@@ -311,47 +338,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        playerHandTextView.setText("Your Hand: " + String.valueOf(game.getPlayerScore()));
-        dealerHandTextView.setText("Dealer's Hand: " + String.valueOf(game.getDealerHand().get(0).getRank()));
+        playerHandTextView.setText("(" + String.valueOf(game.getPlayerScore()) + ")");
+        dealerHandTextView.setText("");
     }
 
-    private void updatePlayerHand() {
-
-
-        Handler handler = new Handler();
-
-        Runnable updateImageRunnable = new Runnable() {
-            @Override
-            public void run() {
-                playerImages.get(0).setImageResource(getCardImageView(game.getPlayerHand().get(0)));
-
-                handler.postDelayed(this, 1000);
-
-                playerImages.get(1).setImageResource(getCardImageView(game.getPlayerHand().get(1)));
-
-            }
-        };
-
-//        for(int i = 0; i < game.getPlayerHand().size(); i++){
-//            try {
-//                // Sleep for 1000 milliseconds (1 second)
-//                Thread.sleep(1000);
-//            } catch (InterruptedException e) {
-//                // Handle interrupted exception (if needed)
-//                e.printStackTrace();
-//            }
-//
-//            Log.d("sleepCheck", game.getPlayerHand().get(i).toString());
-//
-//            playerImages.get(i).setImageResource(getCardImageView(game.getPlayerHand().get(i)));
-//
-//        }
-    }
-
-    @SuppressLint("SetTextI18n")
-    private void splitUpdateUI() {
-        doubleButton.setVisibility(View.GONE);
-    }
 
     @SuppressLint("SetTextI18n")
     private void updateUI() {
@@ -364,8 +354,8 @@ public class MainActivity extends AppCompatActivity {
             dealerImages.get(i).setImageResource(getCardImageView(game.getDealerHand().get(i)));
         }
 
-        playerHandTextView.setText("Your hand: " + String.valueOf(game.getPlayerScore()));
-        dealerHandTextView.setText("Dealer's Hand: " + String.valueOf(game.getDealerScore()));
+        playerHandTextView.setText("(" + String.valueOf(game.getPlayerScore()) + ")");
+        dealerHandTextView.setText("(" + String.valueOf(game.getDealerScore()) + ")");
     }
 
     private void showDialog(String message, String title) {
@@ -373,7 +363,21 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle(title)
                 .setMessage(message)
                 .setPositiveButton("OK", (dialog, id) -> {
-                    // Do something when OK button is clicked
+                    dialog.dismiss();
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void showDialog2(String message, String title) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("OK", (dialog, id) -> {
+                    Intent intent = new Intent(MainActivity.this, SplitActivity.class);
+                    intent.putExtra("Game", game);
+
+                    startActivity(intent);
                 });
         AlertDialog dialog = builder.create();
         dialog.show();
