@@ -5,9 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SplitActivity"
+
     android:padding="15dp"
     android:layout_alignParentLeft="true"
-    android:background="@drawable/bg">
+    android:background="@drawable/mybg">
 
     <TextView
         android:id="@+id/dealerHandTextView"

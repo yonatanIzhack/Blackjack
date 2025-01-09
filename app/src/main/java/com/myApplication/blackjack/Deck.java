@@ -1,4 +1,4 @@
-package com.example.blackjack;
+package com.myApplication.blackjack;
 
 
 import java.io.Serializable;

@@ -1,9 +1,7 @@
-package com.example.blackjack;
+package com.myApplication.blackjack;
 
 
-import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.Serializable;
 import java.util.ArrayList;

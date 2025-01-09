@@ -3,8 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="15dp"
-    android:background="@drawable/bg"
+    android:background="@drawable/mybg"
     android:layout_alignParentLeft="true"
+    android:orientation="vertical"
     >
 
     <TextView
@@ -230,6 +231,24 @@
         android:textColor="#FFFFFF"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="450dp" />
+
+    <FrameLayout
+        android:id="@+id/dim_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone"
+        android:clipToPadding="false"
+        android:padding="0dp">
+
+        <ImageView
+            android:id="@+id/center_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/dealer_icon"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
 
 
 </RelativeLayout>

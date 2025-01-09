@@ -3,15 +3,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.blackjack"
+    namespace = "com.myApplication.blackjack"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.blackjack"
+        applicationId = "com.myApplication.blackjack"
         minSdk = 24
-        targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 34
+        versionCode = 2
+        versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

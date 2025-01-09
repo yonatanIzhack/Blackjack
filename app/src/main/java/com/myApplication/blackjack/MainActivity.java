@@ -1,29 +1,21 @@
-package com.example.blackjack;
+package com.myApplication.blackjack;
 
-import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Parcelable;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
     private BlackjackGame game;
@@ -34,6 +26,9 @@ public class MainActivity extends AppCompatActivity {
     private ImageView dealerImg1, dealerImg2, dealerImg3, dealerImg4, dealerImg5, dealerImg6, dealerImg7;
     private ImageView faceDownCard;
 
+    private FrameLayout dimOverlay;
+
+
     private List<ImageView> playerImages;
     private List<ImageView> dealerImages;
 
@@ -41,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
 
         resultTextView = findViewById(R.id.resultTextView);
@@ -90,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
 
         faceDownCard = findViewById(R.id.faceDownCard);
 
+        dimOverlay = findViewById(R.id.dim_overlay);
+
         splitButton.setVisibility(View.GONE);
 
         hitButton.setOnClickListener(new View.OnClickListener() {
@@ -127,7 +125,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        dimOverlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dimOverlay.setVisibility(View.GONE);
+            }
+        });
 
         startNewGame();
     }
@@ -272,6 +275,8 @@ public class MainActivity extends AppCompatActivity {
     private void initialUpdateUI() {
 
         dealerImg1.setImageResource(getCardImageView(game.getDealerHand().get(0)));
+//        playerImg1.setImageResource(getCardImageView(game.getDealerHand().get(0)));
+//        playerImg2.setImageResource(getCardImageView(game.getDealerHand().get(1)));
 
         float x = dealerImg1.getX();
         float y = dealerImg1.getY();
@@ -367,6 +372,7 @@ public class MainActivity extends AppCompatActivity {
                 });
         AlertDialog dialog = builder.create();
         dialog.show();
+        //dimOverlay.setVisibility(View.VISIBLE);
     }
 
     private void showDialog2(String message, String title) {

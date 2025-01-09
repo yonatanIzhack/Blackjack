@@ -1,4 +1,4 @@
-package com.example.blackjack;
+package com.myApplication.blackjack;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.blackjack.databinding.FragmentSecondBinding;
+import com.myApplication.blackjack.databinding.FragmentSecondBinding;
 
 public class SecondFragment extends Fragment {
 
