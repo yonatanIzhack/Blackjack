@@ -5,14 +5,26 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.myApplication.blackjack.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +48,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        new Thread(
+                () -> {
+                    // Initialize the Google Mobile Ads SDK on a background thread.
+                    MobileAds.initialize(this, initializationStatus -> {});
+                })
+                .start();
+
+        loadAd();
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
 
@@ -107,6 +129,14 @@ public class MainActivity extends AppCompatActivity {
         newGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(mInterstitialAd != null){
+                    mInterstitialAd.show(MainActivity.this);
+                }
+                else {
+                    loadAd();
+                }
+
                 startNewGame();
             }
         });
@@ -364,30 +394,111 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showDialog(String message, String title) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("OK", (dialog, id) -> {
-                    dialog.dismiss();
-                });
-        AlertDialog dialog = builder.create();
+        // Inflate the custom layout
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.custom_dialog, null);
+
+        // Initialize the UI elements in the dialog
+        TextView titleTextView = dialogView.findViewById(R.id.dialog_title);
+        TextView messageTextView = dialogView.findViewById(R.id.dialog_message);
+        Button okButton = dialogView.findViewById(R.id.dialog_ok_button);
+
+        // Set the title and message
+        titleTextView.setText(title);
+        messageTextView.setText(message);
+
+        // Create the dialog
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        // Handle the OK button click
+        okButton.setOnClickListener(v -> dialog.dismiss());
+
+        // Show the dialog
         dialog.show();
-        //dimOverlay.setVisibility(View.VISIBLE);
     }
+
 
     private void showDialog2(String message, String title) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("OK", (dialog, id) -> {
-                    Intent intent = new Intent(MainActivity.this, SplitActivity.class);
-                    intent.putExtra("Game", game);
+        // Inflate the custom layout
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.custom_dialog, null);
 
-                    startActivity(intent);
-                });
-        AlertDialog dialog = builder.create();
+        // Initialize UI elements
+        TextView titleTextView = dialogView.findViewById(R.id.dialog_title);
+        TextView messageTextView = dialogView.findViewById(R.id.dialog_message);
+        Button okButton = dialogView.findViewById(R.id.dialog_ok_button);
+
+        // Set title and message
+        titleTextView.setText(title);
+        messageTextView.setText(message);
+
+        // Create the dialog
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        // Handle OK button click
+        okButton.setOnClickListener(v -> {
+            // Start the new activity
+            Intent intent = new Intent(MainActivity.this, SplitActivity.class);
+            intent.putExtra("Game", game); // Pass your game object or data here
+            startActivity(intent);
+
+            // Dismiss the dialog
+            dialog.dismiss();
+        });
+
+        // Show the dialog
         dialog.show();
     }
+
+    private InterstitialAd mInterstitialAd;
+    private void loadAd(){
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        InterstitialAd.load(getApplicationContext(), "ca-app-pub-4797712738094338/4016848232", adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                mInterstitialAd = null;
+            }
+
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                mInterstitialAd = interstitialAd;
+
+                mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                    @Override
+                    public void onAdClicked() {
+                        super.onAdClicked();
+                    }
+
+                    @Override
+                    public void onAdDismissedFullScreenContent() {
+                        mInterstitialAd = null;
+                    }
+
+                    @Override
+                    public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+                        mInterstitialAd = null;
+                    }
+
+                    @Override
+                    public void onAdImpression() {
+                        super.onAdImpression();
+                    }
+
+                    @Override
+                    public void onAdShowedFullScreenContent() {
+                        super.onAdShowedFullScreenContent();
+                    }
+                });
+            }
+        });
+
+    }
+
 
     public int getCardImageView(Card card){
         String StringCard = card.toString();

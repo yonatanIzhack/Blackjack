@@ -10,8 +10,8 @@ android {
         applicationId = "com.myApplication.blackjack"
         minSdk = 24
         targetSdk = 34
-        versionCode = 2
-        versionName = "2.0"
+        versionCode = 5
+        versionName = "5.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -35,6 +35,8 @@ android {
 }
 
 dependencies {
+
+    implementation("com.google.android.gms:play-services-ads:23.6.0")
 
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")

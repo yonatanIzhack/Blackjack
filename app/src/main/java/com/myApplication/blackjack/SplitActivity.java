@@ -6,10 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.myApplication.blackjack.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +38,7 @@ public class SplitActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         setContentView(R.layout.activity_split);
+
 
         firstHandResultTextView = findViewById(R.id.firstHandResultTextView);
         secondHandResultTextView = findViewById(R.id.secondHandResultTextView);
@@ -356,13 +360,28 @@ public class SplitActivity extends AppCompatActivity {
     }
 
     private void showDialog(String message, String title) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("OK", (dialog, id) -> {
-                    // Do something here
-                });
-        AlertDialog dialog = builder.create();
+        // Inflate the custom layout
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.custom_dialog, null);
+
+        // Initialize the UI elements in the dialog
+        TextView titleTextView = dialogView.findViewById(R.id.dialog_title);
+        TextView messageTextView = dialogView.findViewById(R.id.dialog_message);
+        Button okButton = dialogView.findViewById(R.id.dialog_ok_button);
+
+        // Set the title and message
+        titleTextView.setText(title);
+        messageTextView.setText(message);
+
+        // Create the dialog
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        // Handle the OK button click
+        okButton.setOnClickListener(v -> dialog.dismiss());
+
+        // Show the dialog
         dialog.show();
     }
 
