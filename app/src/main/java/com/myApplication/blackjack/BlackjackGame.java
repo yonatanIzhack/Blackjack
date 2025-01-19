@@ -16,6 +16,9 @@ public class BlackjackGame implements Serializable {
     boolean HitFirstHand = true;
     boolean isSplit = false;
 
+    private double balance;
+    private double bet;
+
     public BlackjackGame() {
         deck = new Deck();
         deck.shuffle();
@@ -26,7 +29,11 @@ public class BlackjackGame implements Serializable {
         // for the split
         firstHand = new ArrayList<>();
         secondHand = new ArrayList<>();
+    }
 
+    public BlackjackGame(double balance, double bet){
+        this.balance = balance;
+        this.bet = bet;
     }
 
     public void dealInitialCards() {
@@ -375,5 +382,21 @@ public class BlackjackGame implements Serializable {
         }
 
         return false;
+    }
+
+    public double getBalance() {
+        return this.balance;
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    public double getBet() {
+        return bet;
+    }
+
+    public void setBet(double bet) {
+        this.bet = bet;
     }
 }

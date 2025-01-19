@@ -20,8 +20,9 @@ import java.util.List;
 public class SplitActivity extends AppCompatActivity {
 
     private BlackjackGame game;
+    private BlackjackGame balance;
     private Button hitButton, standButton, doubleButton, newGameButton;
-    private TextView firstHandResultTextView, secondHandResultTextView, dealerHandTextView, firstHandTextView, secondHandTextView;
+    private TextView firstHandResultTextView, secondHandResultTextView, dealerHandTextView, firstHandTextView, secondHandTextView, balanceText;
     private ImageView firstHandImg1, firstHandImg2, firstHandImg3, firstHandImg4, firstHandImg5, firstHandImg6, firstHandImg7;
     private ImageView secondHandImg1, secondHandImg2, secondHandImg3, secondHandImg4, secondHandImg5, secondHandImg6, secondHandImg7;
     private ImageView dealerImg1, dealerImg2, dealerImg3, dealerImg4, dealerImg5, dealerImg6, dealerImg7;
@@ -46,6 +47,7 @@ public class SplitActivity extends AppCompatActivity {
         dealerHandTextView = findViewById(R.id.dealerHandTextView);
         firstHandTextView = findViewById(R.id.firstHandTextView);
         secondHandTextView = findViewById(R.id.secondHandTextView);
+        balanceText = findViewById(R.id.balanceText);
 
         hitButton = findViewById(R.id.hitButton);
         standButton = findViewById(R.id.standButton);
@@ -140,8 +142,9 @@ public class SplitActivity extends AppCompatActivity {
             }
         });
 
-        startNewGame();
 
+        game = (BlackjackGame) getIntent().getSerializableExtra("Game");
+        startNewGame();
     }
 
     private void openMainActivity() {
@@ -160,8 +163,6 @@ public class SplitActivity extends AppCompatActivity {
         doubleButton.setEnabled(true);
         newGameButton.setEnabled(true);
 
-
-        game = (BlackjackGame) getIntent().getSerializableExtra("Game");
         game.firstHandHit();
         game.secondHandHit();
         initialUpdateUI();
@@ -316,8 +317,7 @@ public class SplitActivity extends AppCompatActivity {
 
     private void initialUpdateUI() {
 
-        hitButton.setEnabled(true);
-        doubleButton.setEnabled(true);
+        balanceText.setText("Balance \n" + "s" + "$");
 
         if(game.HitFirstHand){
             pointLeft.setVisibility(View.VISIBLE);
@@ -351,6 +351,9 @@ public class SplitActivity extends AppCompatActivity {
     }
 
     public void UpdateUI(){
+
+        //balanceText.setText("Balance \n" + String.valueOf(balance.getBalance()) + "$");
+
         for(int i = 0; i < game.getDealerHand().size(); i++){
             dealerImages.get(i).setImageResource(getCardImageView(game.getDealerHand().get(i)));
         }

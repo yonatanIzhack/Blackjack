@@ -1,17 +1,24 @@
 package com.myApplication.blackjack;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,8 +29,12 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.rewarded.RewardItem;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.myApplication.blackjack.R;
 
 import java.util.ArrayList;
@@ -31,8 +42,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private BlackjackGame game;
-    private TextView resultTextView, dealerHandTextView, playerHandTextView;
-    private Button hitButton, standButton, doubleButton, splitButton, newGameButton;
+    private TextView resultTextView, dealerHandTextView, playerHandTextView, balanceText, betText;
+    private Button hitButton, standButton, doubleButton, splitButton, newGameButton, setBetButton;
 
     private ImageView playerImg1, playerImg2, playerImg3, playerImg4, playerImg5, playerImg6, playerImg7;
     private ImageView dealerImg1, dealerImg2, dealerImg3, dealerImg4, dealerImg5, dealerImg6, dealerImg7;
@@ -40,9 +51,14 @@ public class MainActivity extends AppCompatActivity {
 
     private FrameLayout dimOverlay;
 
+    private RewardedAd rewardedAd;
+    private final String TAG = "MainActivity";
 
     private List<ImageView> playerImages;
     private List<ImageView> dealerImages;
+
+    private BlackjackGame balance;
+
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -56,7 +72,11 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .start();
 
+
         loadAd();
+        loadVideo();
+
+        game = new BlackjackGame();
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
@@ -64,12 +84,14 @@ public class MainActivity extends AppCompatActivity {
         resultTextView = findViewById(R.id.resultTextView);
         dealerHandTextView = findViewById(R.id.dealerHandTextView);
         playerHandTextView = findViewById(R.id.playerHandTextView);
+        betText = findViewById(R.id.BetText);
 
         hitButton = findViewById(R.id.hitButton);
         standButton = findViewById(R.id.standButton);
         newGameButton = findViewById(R.id.newGameButton);
         doubleButton = findViewById(R.id.doubleButton);
         splitButton = findViewById(R.id.splitButton);
+        setBetButton = findViewById(R.id.setBetButton);
 
         playerImg1 = findViewById(R.id.playerImg1);;
         playerImg2 = findViewById(R.id.playerImg2);;
@@ -106,9 +128,11 @@ public class MainActivity extends AppCompatActivity {
         dealerImages.add(dealerImg6);
         dealerImages.add(dealerImg7);
 
-        faceDownCard = findViewById(R.id.faceDownCard);
-
         dimOverlay = findViewById(R.id.dim_overlay);
+
+
+        balanceText = findViewById(R.id.balanceText);
+
 
         splitButton.setVisibility(View.GONE);
 
@@ -129,7 +153,10 @@ public class MainActivity extends AppCompatActivity {
         newGameButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                loadVideo();
+                if (balance.getBalance() <= 0){
+                    lowBalanceDialog("watch a video and earn 100$", "Your balance is to low");
+                }
                 if(mInterstitialAd != null){
                     mInterstitialAd.show(MainActivity.this);
                 }
@@ -155,6 +182,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        setBetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showBetDialog("Set your bet amount");
+            }
+        });
+
         dimOverlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -162,34 +196,52 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        balance = new BlackjackGame(100, 10);
+
         startNewGame();
     }
 
     public void startNewGame() {
-        doubleButton.setVisibility(View.VISIBLE);
-        splitButton.setVisibility(View.GONE);
-        newGameButton.setVisibility(View.GONE);
 
-
-        for(int i = 0; i < playerImages.size(); i++){
-            playerImages.get(i).setImageResource(0);
+        if(balance.getBet() > balance.getBalance()){
+            balance.setBet(balance.getBalance());
+            betText.setText(String.valueOf(balance.getBet() + "$"));
         }
 
-        for(int i = 0; i < dealerImages.size(); i++){
-            dealerImages.get(i).setImageResource(0);
+        if(balance.getBalance() == 0){
+            hitButton.setEnabled(false);
+            standButton.setEnabled(false);
+            doubleButton.setEnabled(false);
+            splitButton.setEnabled(false);
+            newGameButton.setEnabled(true);
         }
 
+        else{
+            doubleButton.setVisibility(View.VISIBLE);
+            splitButton.setVisibility(View.GONE);
+            newGameButton.setVisibility(View.GONE);
 
-        resultTextView.setText("");
-        hitButton.setEnabled(true);
-        standButton.setEnabled(true);
-        doubleButton.setEnabled(true);
-        splitButton.setEnabled(true);
-        newGameButton.setEnabled(true);
 
-        game = new BlackjackGame();
-        game.dealInitialCards();
-        initialUpdateUI();
+            for(int i = 0; i < playerImages.size(); i++){
+                playerImages.get(i).setImageResource(0);
+            }
+
+            for(int i = 0; i < dealerImages.size(); i++){
+                dealerImages.get(i).setImageResource(0);
+            }
+
+
+            resultTextView.setText("");
+            hitButton.setEnabled(true);
+            standButton.setEnabled(true);
+            doubleButton.setEnabled(true);
+            splitButton.setEnabled(true);
+            newGameButton.setEnabled(true);
+
+            game = new BlackjackGame();
+            game.dealInitialCards();
+            initialUpdateUI();
+        }
     }
 
     private void playerHit() {
@@ -218,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
         initialUpdateUI();
 
         if (game.isPlayerBust()) {
-            endGame("Bust! You lose.");
+            endGame(getResultMessage());
         }
     }
 
@@ -230,6 +282,7 @@ public class MainActivity extends AppCompatActivity {
             showDialog("in that case, you should " + optimalPlay, "played wrong");
         }
 
+        balance.setBet(balance.getBet() * 2);
         // Draw one additional card for the player
         game.playerDouble();
 
@@ -237,6 +290,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Stand after doubling
         playerStand();
+
+        balance.setBet(balance.getBet()/2);
+
     }
 
     private void playerStand() {
@@ -277,6 +333,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void endGame(String message) {
+
         resultTextView.setText(message);
 
         hitButton.setEnabled(false);
@@ -286,16 +343,22 @@ public class MainActivity extends AppCompatActivity {
 
         newGameButton.setVisibility(View.VISIBLE);
         newGameButton.setEnabled(true);
+
+        updateUI();
     }
 
     private String getResultMessage() {
         if(game.isDealerBust()){
+            balance.setBalance(balance.getBalance() + balance.getBet());
             return "Dealer bust! you win";
         } else if(game.isPlayerBust()){
+            balance.setBalance(balance.getBalance() - balance.getBet());
             return "Busted! you lose";
         } else if (game.gameResult().equals("Lose")) {
+            balance.setBalance(balance.getBalance() - balance.getBet());
             return "You lose.";
         } else if (game.gameResult().equals("Win")) {
+            balance.setBalance(balance.getBalance() + balance.getBet());
             return "You win!";
         }
         return "Push";
@@ -304,9 +367,9 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     private void initialUpdateUI() {
 
+        balanceText.setText("Balance \n" + String.valueOf(balance.getBalance()) + "$");
+
         dealerImg1.setImageResource(getCardImageView(game.getDealerHand().get(0)));
-//        playerImg1.setImageResource(getCardImageView(game.getDealerHand().get(0)));
-//        playerImg2.setImageResource(getCardImageView(game.getDealerHand().get(1)));
 
         float x = dealerImg1.getX();
         float y = dealerImg1.getY();
@@ -333,22 +396,7 @@ public class MainActivity extends AppCompatActivity {
             if(game.getPlayerHand().size() == 2){
                 updateUI();
                 if(game.getDealerScore() != 21){
-                    endGame("Blackjack! you win");
-                } else {
-                    endGame("push");
-                }
-
-            }
-        }
-
-        if(game.getPlayerScore() == 21){
-            hitButton.setEnabled(false);
-            doubleButton.setEnabled(false);
-            splitButton.setEnabled(false);
-
-            if(game.getPlayerHand().size() == 2){
-                updateUI();
-                if(game.getDealerScore() != 21){
+                    balance.setBalance(balance.getBalance() + balance.getBet() * 1.5);
                     endGame("Blackjack! you win");
                 } else {
                     endGame("push");
@@ -364,11 +412,11 @@ public class MainActivity extends AppCompatActivity {
             if(game.getDealerHand().size() == 2){
                 updateUI();
                 if(game.getPlayerScore() != 21){
+                    balance.setBalance(balance.getBalance() - balance.getBet());
                     endGame("Blackjack! you lose");
                 } else {
                     endGame("push");
                 }
-
             }
         }
 
@@ -381,6 +429,8 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     private void updateUI() {
 
+        balanceText.setText("Balance \n" + String.valueOf(balance.getBalance()) + "$");
+
         for(int i = 0; i < game.getPlayerHand().size(); i++){
             playerImages.get(i).setImageResource(getCardImageView(game.getPlayerHand().get(i)));
         }
@@ -391,6 +441,54 @@ public class MainActivity extends AppCompatActivity {
 
         playerHandTextView.setText("(" + String.valueOf(game.getPlayerScore()) + ")");
         dealerHandTextView.setText("(" + String.valueOf(game.getDealerScore()) + ")");
+    }
+
+
+    private void showBetDialog(String title) {
+        // Inflate the custom layout
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.dialog_with_textbox, null);
+
+        // Initialize the UI elements in the dialog
+        TextView titleTextView = dialogView.findViewById(R.id.dialog_title);
+        final EditText inputEditText = dialogView.findViewById(R.id.dialog_input);
+        Button okButton = dialogView.findViewById(R.id.dialog_ok_button);
+
+        // Set the title
+        titleTextView.setText(title);
+        inputEditText.setText(String.valueOf(balance.getBet()));
+
+        // Create the dialog
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+        okButton.setOnClickListener(v -> {
+            String userInput = inputEditText.getText().toString();
+            if (isValidInput(userInput)) {
+                if(Double.parseDouble(userInput) > balance.getBalance()){
+                    Toast.makeText(MainActivity.this, "Your balance is to low", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    balance.setBet(Double.parseDouble(userInput));
+                    betText.setText(userInput + "$");
+                    dialog.dismiss();
+                }
+            } else {
+                Toast.makeText(MainActivity.this, "Please enter a valid number", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Show the dialog
+        dialog.show();
+    }
+
+    private boolean isValidInput(String input) {
+        try {
+            double number = Double.parseDouble(input);
+            return number > 0;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     private void showDialog(String message, String title) {
@@ -414,6 +512,36 @@ public class MainActivity extends AppCompatActivity {
 
         // Handle the OK button click
         okButton.setOnClickListener(v -> dialog.dismiss());
+
+        // Show the dialog
+        dialog.show();
+    }
+
+    private void lowBalanceDialog(String message, String title) {
+        // Inflate the custom layout
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.custom_dialog, null);
+
+        // Initialize the UI elements in the dialog
+        TextView titleTextView = dialogView.findViewById(R.id.dialog_title);
+        TextView messageTextView = dialogView.findViewById(R.id.dialog_message);
+        Button okButton = dialogView.findViewById(R.id.dialog_ok_button);
+
+        // Set the title and message
+        titleTextView.setText(title);
+        messageTextView.setText(message);
+
+        // Create the dialog
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        // Handle the OK button click
+        okButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            showVideo();
+
+        });
 
         // Show the dialog
         dialog.show();
@@ -497,6 +625,44 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void loadVideo(){
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        RewardedAd.load(this, "ca-app-pub-4797712738094338/4754180992",
+                adRequest, new RewardedAdLoadCallback() {
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        // Handle the error.
+                        Log.d(TAG, loadAdError.toString());
+                        rewardedAd = null;
+                    }
+
+                    @Override
+                    public void onAdLoaded(@NonNull RewardedAd ad) {
+                        rewardedAd = ad;
+                        Log.d(TAG, "Ad was loaded.");
+                    }
+                });
+    }
+
+    private void showVideo(){
+        if (rewardedAd != null) {
+
+            Activity activityContext = MainActivity.this;
+            rewardedAd.show(activityContext, new OnUserEarnedRewardListener() {
+                @Override
+                public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+                    // Handle the reward.
+                    Log.d(TAG, "The user earned the reward.");
+                    balance.setBalance(100);
+                    balanceText.setText(String.valueOf(balance.getBalance()));
+                }
+            });
+        } else {
+            Log.d(TAG, "The rewarded ad wasn't ready yet.");
+        }
     }
 
 
@@ -645,6 +811,11 @@ public class MainActivity extends AppCompatActivity {
         while (System.currentTimeMillis() < targetTime) {
             // Loop until the target time is reached
         }
+    }
+
+    public void onBackPressed() {
+        // Optionally, you can show a Toast or any feedback to the user
+
     }
 }
 

@@ -9,9 +9,12 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
+        android:supportsRtl="false"
         android:theme="@style/Theme.BlackJack"
         tools:targetApi="31">
+        <activity
+            android:name=".activity_login"
+            android:exported="false" />
         <activity
             android:name=".SplitActivity"
             android:exported="false"
@@ -19,7 +22,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.BlackJack" />
         <activity
-            android:name=".OpeningActivity"
+            android:name=".activity_sign_up"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,14 +30,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".OpeningActivity"
+            android:exported="true" />
         <activity
             android:name=".MainActivity"
-            android:exported="true" />
-
-        <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
+            android:exported="true" /> <!-- Sample AdMob app ID: ca-app-pub-3940256099942544~3347511713 -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-4797712738094338~6375944920"/>
+            android:value="ca-app-pub-4797712738094338~6375944920" />
     </application>
 
 </manifest>
